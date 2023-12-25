@@ -7,9 +7,11 @@ import (
 	"os"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 )
 
+// build a json rest api server
 func main() {
 
 	godotenv.Load(".env")
@@ -20,7 +22,25 @@ func main() {
 	}
 
 	router := chi.NewRouter()
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{
+			"http://*", "https://*",
+		},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
+	v1Router := chi.NewRouter()
 
+	// only fire on get requests
+	v1Router.Get("/healthz", handlerReadiness)
+
+	// allow all Http methods
+	// v1Router.HandleFunc("/healthz", handlerReadiness)
+	v1Router.Get("/err", handleErr)
+	router.Mount("/v1", v1Router)
 	srv := &http.Server{
 		Handler: router,
 		Addr:    ":" + port,

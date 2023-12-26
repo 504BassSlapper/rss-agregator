@@ -3,12 +3,12 @@ version: "3.3"
 services:
   db_service:
     build:
-      context: image
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: image/Dockerfile
     ports:
       - 5432:5432
     volumes:
-      - /data/postgres/rss-db:/var/lib/postgresql/data
+      - /Users/sh4do3/data/postgres/rss-db:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres

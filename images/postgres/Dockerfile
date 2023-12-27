@@ -2,7 +2,7 @@ FROM postgres:16.1-bullseye
 
 WORKDIR /app
 
-COPY  ../sql /app
+
 
 # todo 
 # install goose and sqlc using go builder container 

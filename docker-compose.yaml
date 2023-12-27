@@ -2,14 +2,28 @@ version: "3.3"
 
 services:
   db_service:
+    container_name: db_rss
     build:
-      context: .
-      dockerfile: image/Dockerfile
+      context: images
+      dockerfile: postgres/Dockerfile
     ports:
       - 5432:5432
     volumes:
       - /data/postgres/rss-db:/var/lib/postgresql/data
+      - ./sql:/migration
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=rss-db
+
+    #depends_on: 
+      #-  goose_sqlc
+
+  goose_sqlc: 
+    container_name: goose_sqlc
+    build:
+      context: images
+      dockerfile: go/Dockerfile
+    volumes:
+      - .:/app
+

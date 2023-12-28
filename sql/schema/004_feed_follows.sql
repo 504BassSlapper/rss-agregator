@@ -1,5 +1,3 @@
-
-
 -- +goose Up
 
 CREATE TABLE feed_follows (
@@ -14,7 +12,3 @@ CREATE TABLE feed_follows (
 
 
 
-
--- +goose down
-
-DROP TABLE feed_follows;

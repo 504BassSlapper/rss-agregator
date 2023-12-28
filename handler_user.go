@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/504BassSlapper/rss-agregator/auth"
 	"github.com/504BassSlapper/rss-agregator/internal/database"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
@@ -33,8 +34,22 @@ func (apiConfig *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Req
 		Name:      params.Name,
 	})
 	if err != nil {
-		respondWithError(w, 500, fmt.Sprintf("Could not create user: %v", err))
+		respondWithError(w, 400, fmt.Sprintf("Could not create user: %v", err))
 		return
 	}
-	respondWithJson(w, 200, databaseUserToModelUser(user))
+	respondWithJson(w, 201, databaseUserToModelUser(user))
+}
+
+// get user by apiKey
+func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
+	apiKey, err := auth.GetApiKey(&r.Header)
+	if err != nil {
+		respondWithError(w, 403, err.Error())
+	}
+
+	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
+	if err != nil {
+		respondWithError(w, 404, err.Error())
+	}
+	respondWithJson(w, 200, databaseUserToModelUserWithApiKey(user))
 }

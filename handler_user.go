@@ -8,12 +8,13 @@ import (
 
 	"github.com/504BassSlapper/rss-agregator/internal/database"
 	"github.com/google/uuid"
+	_ "github.com/lib/pq"
 )
 
 func (apiConfig *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	type parameters struct {
-		Name string `name`
+		Name string `json:"name"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -25,11 +26,15 @@ func (apiConfig *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	apiConfig.DB.CreateUser(r.Context(), database.CreateUserParams{
+	user, err := apiConfig.DB.CreateUser(r.Context(), database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
 	})
-	respondWithJson(w, 200, struct{}{})
+	if err != nil {
+		respondWithError(w, 500, fmt.Sprintf("Could not create user: %v", err))
+		return
+	}
+	respondWithJson(w, 200, user)
 }

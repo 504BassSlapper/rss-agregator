@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -28,6 +27,5 @@ func GetApiKey(headers *http.Header) (apiKey string, err error) {
 		return "", errors.New("malformed first part of auth header")
 	}
 	apiKey = vals[1]
-	fmt.Printf("val: %v", apiKey)
 	return
 }

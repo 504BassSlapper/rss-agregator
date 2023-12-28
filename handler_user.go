@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/504BassSlapper/rss-agregator/auth"
 	"github.com/504BassSlapper/rss-agregator/internal/database"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
@@ -41,15 +40,7 @@ func (apiConfig *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Req
 }
 
 // get user by apiKey
-func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetApiKey(&r.Header)
-	if err != nil {
-		respondWithError(w, 403, err.Error())
-	}
+func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 
-	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		respondWithError(w, 404, err.Error())
-	}
 	respondWithJson(w, 200, databaseUserToModelUserWithApiKey(user))
 }

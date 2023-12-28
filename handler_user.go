@@ -36,5 +36,5 @@ func (apiConfig *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Req
 		respondWithError(w, 500, fmt.Sprintf("Could not create user: %v", err))
 		return
 	}
-	respondWithJson(w, 200, user)
+	respondWithJson(w, 200, databaseUserToModelUser(user))
 }

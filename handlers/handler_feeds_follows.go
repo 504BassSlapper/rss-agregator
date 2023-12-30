@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -47,4 +48,15 @@ func (apiConfig *ApiConfig) HandlerGetFeedFollows(w http.ResponseWriter, r *http
 	}
 
 	helper.RespondWithJson(w, 200, models.DataBaseFeedFollowsToFeedFollows(feed_follows))
+}
+
+func (apiConfig *ApiConfig) HandlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request, user *database.User, feedFollow *database.FeedFollow) {
+	err := apiConfig.DB.DeleteFeedFollow(r.Context(), database.DeleteFeedFollowParams{
+		ID:     feedFollow.FeedID,
+		UserID: user.ID,
+	})
+	if err != nil {
+		log.Printf("Could not delete feed follow %s", feedFollow.ID)
+		helper.RespondWithError(w, 400, fmt.Sprintf("Could not delete feed follow: ", err))
+	}
 }

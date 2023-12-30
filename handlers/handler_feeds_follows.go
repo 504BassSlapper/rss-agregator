@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -33,9 +35,28 @@ func (apiConfig *ApiConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *ht
 	})
 
 	if err != nil {
-		helper.RespondWithError(w, 400, "could not create feed follow")
+		helper.RespondWithError(w, 400, fmt.Sprintln("could not create feed follow: ", err))
 		return
 	}
 	helper.RespondWithJson(w, 201, models.DatabaseFeedFollowToFeedFollow(feeds_follow))
+}
 
+func (apiConfig *ApiConfig) HandlerGetFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
+	feed_follows, err := apiConfig.DB.GetFeedFollowsForUser(r.Context(), user.ID)
+	if err != nil {
+		helper.RespondWithError(w, 400, fmt.Sprintln("No feed follows found", err))
+	}
+
+	helper.RespondWithJson(w, 200, models.DataBaseFeedFollowsToFeedFollows(feed_follows))
+}
+
+func (apiConfig *ApiConfig) HandlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request, user *database.User, feedFollow *database.FeedFollow) {
+	err := apiConfig.DB.DeleteFeedFollow(r.Context(), database.DeleteFeedFollowParams{
+		ID:     feedFollow.FeedID,
+		UserID: user.ID,
+	})
+	if err != nil {
+		log.Printf("Could not delete feed follow %s", feedFollow.ID)
+		helper.RespondWithError(w, 400, fmt.Sprintf("Could not delete feed follow: ", err))
+	}
 }

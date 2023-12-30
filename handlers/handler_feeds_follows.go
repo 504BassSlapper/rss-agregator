@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -33,7 +34,7 @@ func (apiConfig *ApiConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *ht
 	})
 
 	if err != nil {
-		helper.RespondWithError(w, 400, "could not create feed follow")
+		helper.RespondWithError(w, 400, fmt.Sprintln("could not create feed follow: ", err))
 		return
 	}
 	helper.RespondWithJson(w, 201, models.DatabaseFeedFollowToFeedFollow(feeds_follow))

@@ -38,5 +38,13 @@ func (apiConfig *ApiConfig) HandlerCreateFeedFollow(w http.ResponseWriter, r *ht
 		return
 	}
 	helper.RespondWithJson(w, 201, models.DatabaseFeedFollowToFeedFollow(feeds_follow))
+}
 
+func (apiConfig *ApiConfig) HandlerGetFeedFollows(w http.ResponseWriter, r *http.Request, user database.User) {
+	feed_follows, err := apiConfig.DB.GetFeedFollowsForUser(r.Context(), user.ID)
+	if err != nil {
+		helper.RespondWithError(w, 400, fmt.Sprintln("No feed follows found", err))
+	}
+
+	helper.RespondWithJson(w, 200, models.DataBaseFeedFollowsToFeedFollows(feed_follows))
 }
